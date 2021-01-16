@@ -1,0 +1,122 @@
+public class Simulator {
+    public static final int ON_FIRE = 0, ASH = 1, LIVING = 2, EMPTY = 3;
+    private int r, c, numFires = 0, treesBurned = 0;
+    private int[][] arr;
+    private double treeProb;
+
+    public Simulator(int r, int c) {
+        this.r = r;
+        this.c = c;
+        arr = new int[r][c];
+    }
+
+    public void initialize(double treeProb) {
+        this.treeProb = treeProb;
+        int numTrees = (int) (r*c*treeProb);
+        for (int i = 0; i < numTrees; i++) {
+            int row, col;
+            do {
+                row = (int) (Math.random() * r);
+                col = (int) (Math.random() * c);
+            } while (arr[row][col] == LIVING);
+            arr[row][col] = LIVING;
+        }
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if(arr[i][j] != LIVING) {
+                    arr[i][j] = EMPTY;
+                }
+            }
+        }
+        int row = (int) (r*Math.random());
+        int col = (int) (c*Math.random());
+        setFire(row, col);
+    }
+
+    public void reset() {
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                arr[i][j] = EMPTY;
+            }
+        }
+    }
+
+    private void setFire(int row, int col) {
+        arr[row][col] = ON_FIRE;
+        numFires++;
+        treesBurned++;
+    }
+
+    private void setAsh(int row, int col) {
+        arr[row][col] = ASH;
+        numFires--;
+    }
+
+    private boolean isInBounds(int row, int col) {
+        if(row < arr.length && row >= 0 && col < arr[0].length && col >= 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void spreadFireToNeighbors(int row, int col) {
+        for (int r = row-1; r <= row+1; r++) {
+            for (int c = col-1; c <= col+1; c++) {
+                if(isInBounds(r, c) && arr[r][c] == LIVING) {
+                    setFire(r, c);
+                }
+            }
+        }
+    }
+
+    public void propogateFire() {
+        int[][] copy = new int[arr.length][arr[0].length];
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+                copy[i][j] = arr[i][j];
+            }
+        }
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+                if(copy[i][j] == ON_FIRE) {
+                    spreadFireToNeighbors(i, j);
+                    setAsh(i, j);
+                }
+            }
+        }
+    }
+
+    public int getResults() {
+        reset();
+        return treesBurned;
+    }
+
+    public void fullRun() {
+        treesBurned = 0;
+        int row, col;
+        do {
+            row = (int) (r*Math.random());
+            col = (int) (c*Math.random());
+        } while (arr[row][col] != LIVING);
+        setFire(row, col);
+        while(numFires != 0) {
+            propogateFire();
+        }
+    }
+
+
+
+    public int getWidth() {
+        return c;
+    }
+
+    public int getHeight() {
+        return r;
+    }
+
+    public int[][] getDisplayGrid() {
+        return arr;
+    }
+}
