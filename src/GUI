@@ -1,0 +1,38 @@
+import processing.core.PApplet;
+
+public class GUI extends PApplet {
+    Simulator sim;
+    DisplayWindow gridDisplay;
+
+    public void settings() {
+        size(640, 550);
+    }
+
+    public void setup() {
+        sim = new Simulator(100, 100);
+        sim.initialize(0.5);
+
+
+        gridDisplay = new DisplayWindow(this, 10, 10, 620, 530);
+
+        gridDisplay.setNumCols(sim.getWidth());
+        gridDisplay.setNumRows(sim.getHeight());
+
+        gridDisplay.setColor(Simulator.ON_FIRE, color(255, 0, 0));
+        gridDisplay.setColor(Simulator.ASH, color(180, 180, 180));
+        gridDisplay.setColor(Simulator.LIVING, color(34,139,34));
+        gridDisplay.setColor(Simulator.EMPTY, color(255, 255, 255));
+
+    }
+    @Override
+    public void draw() {
+        background(200);
+        sim.propogateFire();
+        gridDisplay.drawGrid(sim.getDisplayGrid());
+    }
+
+    public static void main(String[] args) {
+        PApplet.main("GUI");
+
+    }
+}
