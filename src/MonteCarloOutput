@@ -1,0 +1,23 @@
+
+public class MonteCarloOutput {
+    public static void main(String[] args) {
+        Simulator sim = new Simulator(100,100);
+
+        System.out.println("i \t treesburned");
+        int treesBurned;
+        double treeprob;
+        for (int j = 1; j < 100; j++) {
+            treeprob = j/100.00;
+            treesBurned = 0;
+            for (int i = 0; i < 1000; i++) {
+                sim.initialize(treeprob);
+                sim.fullRun();
+                treesBurned += sim.getResults();
+//                System.out.println(treesBurned);
+
+            }
+            double avgtreesburned = treesBurned/1000.0;
+            System.out.println(treeprob + "\t" + avgtreesburned);
+        }
+    }
+}
